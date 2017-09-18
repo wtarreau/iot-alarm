@@ -16,8 +16,8 @@ LS_HALF_STOP=6
 -- transition delays in milliseconds
 LIGHT_FULL_TIME=30000
 LIGHT_STAY_TIME=600000
-LIGHT_HALF_TIME=5000
-LIGHT_STOP_TIME=10000
+LIGHT_HALF_TIME=15000
+LIGHT_STOP_TIME=30000
 
 -- light state, last change date, last brightness
 light_state=LS_IDLE
@@ -51,7 +51,7 @@ function light_duration()
   if light_state == LS_IDLE then return 0 end
   now=now-light_change
   if now < 0 then now=now+2147483648 end
-  return now / 1000
+  return math.floor(now / 1000)
 end
 
 function light_set_state(state)
@@ -65,12 +65,12 @@ function light_new_brightness()
   local dur=light_duration()
 
   if light_state == LS_FULL_START then
-    if dur < LIGHT_FULL_TIME then return light_duration() * 1023 / LIGHT_FULL_TIME end
+    if dur < LIGHT_FULL_TIME then return math.floor(light_duration() * 1023 / LIGHT_FULL_TIME) end
     light_set_state(LS_FULL)
   end
 
   if light_state == LS_HALF_START then
-    if dur < LIGHT_HALF_TIME then return light_duration() * 512 / LIGHT_HALF_TIME end
+    if dur < LIGHT_HALF_TIME then return math.floor(light_duration() * 512 / LIGHT_HALF_TIME) end
     light_set_state(LS_HALF)
   end
 
@@ -85,12 +85,12 @@ function light_new_brightness()
   end
 
   if light_state == LS_FULL_STOP then
-    if dur < LIGHT_FULL_TIME then return 1023 - light_duration() * 1023 / LIGHT_FULL_TIME end
+    if dur < LIGHT_FULL_TIME then return 1023 - math.floor(light_duration() * 1023 / LIGHT_FULL_TIME) end
      light_set_state(LS_IDLE)
   end
 
   if light_state == LS_HALF_STOP then
-    if dur < LIGHT_HALF_TIME then return 512 - light_duration() * 512 / LIGHT_HALF_TIME end
+    if dur < LIGHT_HALF_TIME then return 512 - math.floor(light_duration() * 512 / LIGHT_HALF_TIME) end
      light_set_state(LS_IDLE)
   end
 
@@ -98,8 +98,10 @@ function light_new_brightness()
 end
 
 
--- set light's pwm from 0 to 1023
+-- set light's pwm from 0 to 1023 (quadratic curve)
 function light_pwm(val)
+  val=val < 0 and 0 or val > 1023 and 1023 or val
+  val=val*val/1023
   pwm.setduty(brd_pwm, val)
 end
 
