@@ -28,6 +28,10 @@ force_refresh=nil
 -- current time
 tyy,tmm,tdd,th,tm,ts,twd=0,0,0,0,0,0,0
 
+-- basic alarm time, hour only for now (exp), -1=off
+ah=-1
+am=0
+
 -- low level button handlers
 function btn1_trig()
   local lev=debounce(brd_btn1)
@@ -114,7 +118,7 @@ function refresh()
     force_refresh=nil
     tyy,tmm,tdd,th,tm,ts,twd=yy,mm,dd,h,m,s,wd
     disp_lines(string.format("%04d-%02d-%02d (%d)",yy,mm,dd,wd),
-               string.format("%02d:%02d:%02d",h,m,s),
+               string.format("%02d:%02d:%02d   [al %02d:%02d]",h,m,s,ah,am),
 	       string.format("state=%d ratio=%d",light_state, ratio))
   end
 
@@ -128,7 +132,6 @@ end
 function btn1_cb()
   print("btn1: ",btn1_state," st: ",light_state)
   if btn1_state == 1 then return end
-  --if light_state == LS_IDLE then light_set_state(LS_FULL_START) end
   if light_state == LS_IDLE then
     light_set_state(LS_FULL_START)
   elseif light_state < 6 then
@@ -138,10 +141,23 @@ function btn1_cb()
   end
   force_refresh=1
   refresh()
+  print("    new st: ",light_state)
 end
 
 function btn2_cb()
-  print("btn2: ",btn2_state)
+  if btn2_state == 1 then return end
+  ah=ah >= 23 and -1 or (ah + 1)
+  print("btn2: alarm: ",ah,":",am)
+  force_refresh=1
+  refresh()
+end
+
+-- periodic callback
+function tick()
+  if light_state == LS_IDLE and th == ah and tm == am then
+    light_state = LS_FULL_START
+  end
+  refresh()
 end
 
 -- entry point
@@ -150,4 +166,4 @@ gpio.trig(brd_btn1,"both",btn1_trig)
 gpio.trig(brd_btn2,"both",btn2_trig)
 pwm.setup(brd_pwm,500,0)
 pwm.start(brd_pwm)
-tmr.alarm(1,100,tmr.ALARM_AUTO,refresh)
+tmr.alarm(1,100,tmr.ALARM_AUTO,tick)
