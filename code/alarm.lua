@@ -28,9 +28,8 @@ force_refresh=nil
 -- current time
 tyy,tmm,tdd,th,tm,ts,twd=0,0,0,0,0,0,0
 
--- basic alarm time, hour only for now (exp), -1=off
-ah=-1
-am=0
+-- basic alarm time, number of minutes of the day, -1=off
+alarm=-1
 
 -- low level button handlers
 function btn1_trig()
@@ -109,6 +108,16 @@ function light_pwm(val)
   pwm.setduty(brd_pwm, val)
 end
 
+-- returns alarm hour, or -1 if off
+function alarm_h()
+  return alarm >= 0 and math.floor(alarm/60) or -1
+end
+
+-- returns alarm minute, or -1 if off
+function alarm_m()
+  return alarm >= 0 and alarm%60 or -1
+end
+
 -- manages screen and brightness
 function refresh()
   local ratio=light_new_brightness()
@@ -118,7 +127,7 @@ function refresh()
     force_refresh=nil
     tyy,tmm,tdd,th,tm,ts,twd=yy,mm,dd,h,m,s,wd
     disp_lines(string.format("%04d-%02d-%02d (%d)",yy,mm,dd,wd),
-               string.format("%02d:%02d:%02d   [al %02d:%02d]",h,m,s,ah,am),
+               string.format("%02d:%02d:%02d   [al %02d:%02d]",h,m,s,alarm_h(),alarm_m()),
 	       string.format("state=%d ratio=%d",light_state, ratio))
   end
 
@@ -132,12 +141,18 @@ end
 function btn1_cb()
   print("btn1: ",btn1_state," st: ",light_state)
   if btn1_state == 1 then return end
-  if light_state == LS_IDLE then
-    light_set_state(LS_FULL_START)
-  elseif light_state < 6 then
-    light_set_state(light_state+1)
+
+  if btn2_state == 0 then
+    -- disable alarm if btn1 pressed while btn2 pressed.
+    alarm=-1
   else
-    light_set_state(LS_IDLE)
+    if light_state == LS_IDLE then
+      light_set_state(LS_FULL_START)
+    elseif light_state < 6 then
+      light_set_state(light_state+1)
+    else
+      light_set_state(LS_IDLE)
+    end
   end
   force_refresh=1
   refresh()
@@ -146,15 +161,15 @@ end
 
 function btn2_cb()
   if btn2_state == 1 then return end
-  ah=ah >= 23 and -1 or (ah + 1)
-  print("btn2: alarm: ",ah,":",am)
+  alarm = alarm < 0 and 0 or alarm >= 1410 and -1 or (alarm + 30)
+  print("btn2: alarm: ",alarm_h(),":",alarm_m())
   force_refresh=1
   refresh()
 end
 
 -- periodic callback
 function tick()
-  if light_state == LS_IDLE and th == ah and tm == am then
+  if light_state == LS_IDLE and th == alarm_h() and tm == alarm_m() then
     light_state = LS_FULL_START
   end
   refresh()
