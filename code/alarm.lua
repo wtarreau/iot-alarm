@@ -123,7 +123,7 @@ function refresh()
   local ratio=light_new_brightness()
   local yy,mm,dd,h,m,s,wd=time_get_now()
 
-  if m ~= nil and (m ~= tm or force_refresh) then
+  if m ~= nil and (m ~= tm or force_refresh) and disp_lines ~= nil then
     force_refresh=nil
     tyy,tmm,tdd,th,tm,ts,twd=yy,mm,dd,h,m,s,wd
     disp_lines(string.format("%04d-%02d-%02d (%d)",yy,mm,dd,wd),
