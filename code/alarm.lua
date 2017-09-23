@@ -47,11 +47,11 @@ function refresh()
 end
 
 -- high level button functions, debounced
-function btn1_cb()
-  print("btn1: ",btn1_state," st: ",light_state)
-  if btn1_state == 1 then return end
+function btn1_cb(btn,ev)
+  print("btn:",btn,": ev=",ev)
+  if ev == 0 then return end
 
-  if btn2_state == 0 then
+  if btn_state[2] == 0 then
     -- disable alarm if btn1 pressed while btn2 pressed.
     alarm=-1
   else
@@ -63,17 +63,21 @@ function btn1_cb()
       light_set_state(LS_IDLE)
     end
   end
-  force_refresh=1
-  refresh()
-  print("    new st: ",light_state)
+  if ev ~= 2 then
+    force_refresh=1
+    refresh()
+  end
 end
 
-function btn2_cb()
-  if btn2_state == 1 then return end
+function btn2_cb(btn,ev)
+  print("btn:",btn,": ev=",ev)
+  if ev == 1 then return end
   alarm = alarm < 0 and 0 or alarm >= 1410 and -1 or (alarm + 30)
   print("btn2: alarm: ",alarm_h(),":",alarm_m())
-  force_refresh=1
-  refresh()
+  if ev ~= 2 then
+    force_refresh=1
+    refresh()
+  end
 end
 
 -- periodic callback
@@ -87,3 +91,5 @@ end
 -- entry point
 
 tmr.alarm(1,100,tmr.ALARM_AUTO,tick)
+btn_cb[1]=btn1_cb
+btn_cb[2]=btn2_cb
