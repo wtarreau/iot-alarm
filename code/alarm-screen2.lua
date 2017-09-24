@@ -6,39 +6,26 @@ function screen_show()
 end
 
 function screen_btn1_cb(btn,ev)
+  local ah,al=alarm_h(),alarm_m()
   if ev == 0 then return end
-  if ev == 3 then curr_screen=nil return end
+  if ev == 4 then curr_screen=nil return end
 
-  if digit == 1 then
-    local ah=alarm_h()+10
-    local al=alarm_m()
-  elseif digit == 2 then
-    local ah=alarm_h()+1
-    local al=alarm_m()
-  elseif digit == 4 then
-    local ah=alarm_h()
-    local al=alarm_m()+10
-  elseif digit == 5 then
-    local ah=alarm_h()
-    local al=alarm_m()+1
+  if digit == 1 then       ah=ah+10
+  elseif digit == 2 then   ah=ah+1
+  elseif digit == 4 then   al=al+10
+  elseif digit == 5 then   al=al+1
   end
 
-  if ah < 24 then ah=-1 end
-  if am < 60 then am=-1 end
+  if ah >= 24 then ah=-1 end
+  if am >= 60 then am=0 end
   alarm=ah*60+am
 
-  if ev ~= 2 then curr_screen=nil end
+  if ev == 1 then curr_screen=nil end
 end
 
 function screen_btn2_cb(btn,ev)
   if ev == 0 then digit=(digit >= 5) and 0 or (digit==2) and 4 or (digit+1) end
-  if ev == 3 then want_screen=0 end
---  alarm = alarm < 0 and 0 or alarm >= 1410 and -1 or (alarm + 30)
---  print("btn2: alarm: ",alarm_h(),":",alarm_m())
---  if ev ~= 2 then
---    curr_screen=nil
---    refresh()
---  end
+  if ev == 2 then want_screen=0 end
 end
 
 function screen_unload()

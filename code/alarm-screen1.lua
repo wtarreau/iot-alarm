@@ -15,7 +15,7 @@ function screen_btn1_cb(btn,ev)
   else
     light_set_state(LS_IDLE)
   end
-  if ev ~= 2 then curr_screen=nil end
+  if ev == 1 or ev == 4 then screen_show() end
 end
 
 function screen_btn2_cb(btn,ev)

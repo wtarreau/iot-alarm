@@ -1,7 +1,8 @@
 -- debounced button states (0=pressed,1=released), time counts, and callbacks.
--- Callbacks : function(btn,0/1/2/3) for release/press/repeat/stop. Note: "stop"
--- is sent instead of "release" after "repeat" so up is a release after a short
--- press. "hold" is handled by a timer and automatically repeats every 200ms.
+-- Callbacks : function(btn,0/1/2/3/4) for release/press/long/repeat/stop.
+-- Note: "stop" is sent instead of "release" after "repeat"/"long" so that
+-- "release" is a release after a short press only. "long" is handled by a
+-- timer and automatically repeats every 200ms with the "repeat" event.
 -- btn_cnt is 0 on release and starts at 1 when pressed, and caps to 5 (1 sec).
 -- It's enough to detect a press. It uses timer #2.
 btn_state={1,1}
@@ -14,7 +15,7 @@ function btn_trig(btn,lev)
   if btn_state[btn] ~= lev then
     btn_state[btn] = lev
     if lev == 1 then
-      ev=btn_cnt[btn] < 5 and 0 or 3
+      ev=btn_cnt[btn] < 5 and 0 or 4
       btn_cnt[btn]=0
     elseif lev == 0 and btn_cnt[btn] == 0 then
       ev=1
@@ -42,9 +43,10 @@ tmr.alarm(2,200,tmr.ALARM_AUTO,function()
   local btn
   for btn=1,2 do
     if btn_cnt[btn] == 5 then
-      if btn_cb[btn] ~= nil then btn_cb[btn](btn,2) end
+      if btn_cb[btn] ~= nil then btn_cb[btn](btn,3) end
     elseif btn_cnt[btn] > 0 then
       btn_cnt[btn]=btn_cnt[btn]+1
+      if btn_cnt[btn] == 5 and btn_cb[btn] ~= nil then btn_cb[btn](btn,2) end
     end
   end
 end)
