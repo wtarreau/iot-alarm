@@ -26,15 +26,19 @@ function btn_trig(btn,lev)
   end
 end
 
-function btn1_trig()
-  btn_trig(1,debounce(brd_btn1))
+if brd_btn1 ~= nil then
+  gpio.trig(brd_btn1,"both",function()
+    btn_trig(1,debounce(brd_btn1))
+  end)
 end
 
-function btn2_trig()
-  btn_trig(2,debounce(brd_btn2))
+if brd_btn2 ~= nil then
+  gpio.trig(brd_btn2,"both",function()
+    btn_trig(2,debounce(brd_btn2))
+  end)
 end
 
-function btn_repeat()
+tmr.alarm(2,200,tmr.ALARM_AUTO,function()
   local btn
   for btn=1,2 do
     if btn_cnt[btn] == 5 then
@@ -43,8 +47,4 @@ function btn_repeat()
       btn_cnt[btn]=btn_cnt[btn]+1
     end
   end
-end
-
-if brd_btn1 ~= nil then gpio.trig(brd_btn1,"both",btn1_trig) end
-if brd_btn2 ~= nil then gpio.trig(brd_btn2,"both",btn2_trig) end
-tmr.alarm(2,200,tmr.ALARM_AUTO,btn_repeat)
+end)
