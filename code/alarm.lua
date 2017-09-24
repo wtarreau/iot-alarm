@@ -1,4 +1,5 @@
 -- alarm clock application
+-- only works with a stripped down firmware (integer, 12 modules)
 
 function load_files(...)
   local arg={...}
