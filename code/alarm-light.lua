@@ -16,7 +16,7 @@ function light_duration()
   local now=tmr.now()
   if light_state == LS_IDLE then return 0 end
   now=now-light_change
-  if now < 0 then now=now+2147483648 end
+  if now < 0 then now=now+1073741824 now=now+1073741824 end
   return math.floor(now / 1000)
 end
 
