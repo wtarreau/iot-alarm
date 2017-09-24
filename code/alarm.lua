@@ -1,5 +1,7 @@
 -- alarm clock application
 -- only works with a stripped down firmware (integer, 12 modules)
+curr_screen=1  -- set to nil to force an immediate refresh on want_screen
+want_screen=0
 
 function load_files(...)
   local arg={...}
@@ -15,7 +17,6 @@ end
 load_files("alarm-vars","alarm-buttons","alarm-light")
 
 -- a few local variables
-force_refresh=nil
 light_bright=0
 
 -- returns alarm hour, or -1 if off
@@ -32,52 +33,33 @@ end
 function refresh()
   local ratio=light_new_brightness()
   local yy,mm,dd,h,m,s,wd=time_get_now()
+  local force_refresh
 
-  if m ~= nil and (m ~= tm or force_refresh) and disp_lines ~= nil then
-    force_refresh=nil
+  if m ~= tm then force_refresh=1 end
+
+  if s ~= nil then
     tyy,tmm,tdd,th,tm,ts,twd=yy,mm,dd,h,m,s,wd
-    disp_lines(string.format("%04d-%02d-%02d (%d)",yy,mm,dd,wd),
-               string.format("%02d:%02d:%02d   [al %02d:%02d]",h,m,s,alarm_h(),alarm_m()),
-	       string.format("state=%d ratio=%d",light_state, ratio))
+    yy,mm,dd,h,m,s,wd=nil,nil,nil,nil,nil,nil,nil
+  end
+
+  if curr_screen ~= want_screen then
+    if screen_unload ~= nil then screen_unload() end
+    curr_screen=want_screen
+    btn_cb[1]=nil
+    btn_cb[2]=nil
+    load_files("alarm-screen" .. curr_screen)
+    btn_cb[1]=screen_btn1_cb
+    btn_cb[2]=screen_btn2_cb
+    force_refresh=1
   end
 
   if ratio ~= light_bright then
     light_bright=ratio
     light_pwm(ratio)
   end
-end
 
--- high level button functions, debounced
-function btn1_cb(btn,ev)
-  print("btn:",btn,": ev=",ev)
-  if ev == 0 then return end
-
-  if btn_state[2] == 0 then
-    -- disable alarm if btn1 pressed while btn2 pressed.
-    alarm=-1
-  else
-    if light_state == LS_IDLE then
-      light_set_state(LS_FULL_START)
-    elseif light_state < 6 then
-      light_set_state(light_state+1)
-    else
-      light_set_state(LS_IDLE)
-    end
-  end
-  if ev ~= 2 then
-    force_refresh=1
-    refresh()
-  end
-end
-
-function btn2_cb(btn,ev)
-  print("btn:",btn,": ev=",ev)
-  if ev == 1 then return end
-  alarm = alarm < 0 and 0 or alarm >= 1410 and -1 or (alarm + 30)
-  print("btn2: alarm: ",alarm_h(),":",alarm_m())
-  if ev ~= 2 then
-    force_refresh=1
-    refresh()
+  if screen_show ~= nil and force_refresh then
+    screen_show()
   end
 end
 
@@ -92,5 +74,5 @@ end
 -- entry point
 
 tmr.alarm(1,100,tmr.ALARM_AUTO,tick)
-btn_cb[1]=btn1_cb
-btn_cb[2]=btn2_cb
+btn_cb[1]=screen_btn1_cb
+btn_cb[2]=screen_btn2_cb
