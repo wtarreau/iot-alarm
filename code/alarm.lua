@@ -66,7 +66,7 @@ end
 -- periodic callback
 function tick()
   if light_state == LS_IDLE and th == alarm_h() and tm == alarm_m() then
-    light_state = LS_FULL_START
+    light_set_state(LS_FULL_START)
   end
   refresh()
 end
