@@ -1,0 +1,16 @@
+In order to change the timezone, connect to the device using telnet, then
+modify the code like the following. The operations are performed on a
+temporary file to better deal with the risk of memory shortage. If due to
+a lack of memory it always fails, then the solution consist in booting in
+recovery mode by holding button 1 during power-up.
+
+= file.open("sysconf-cet.lua","w+") and file.write([[
+time_offset=3600
+]]) and file.close()
+show(file.list())
+=node.compile("sysconf-cet.lua")
+=file.remove("sysconf-cet.lua")
+show(file.list())
+=file.remove("sysconf.lc")
+=file.rename("sysconf-cet.lc","sysconf.lc")
+show(file.list())
