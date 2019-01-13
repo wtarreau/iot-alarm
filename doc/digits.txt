@@ -1,0 +1,90 @@
+The clock is represented by emulating a 7-segment display to feature large
+digits. The OLED is 64x32 pixels and we want to have 4 large digits plus the
+separating colon in the middle plus a bit of margin around for extra
+indications or underlining a digit during configuration.
+
+The chosen size for the segments is 3 pixels wide by 10 pixels long :
+
+      o o o o o o o o
+    o o o o o o o o o o
+      o o o o o o o o
+
+The 7 segments are numbered from 0 to 6, and a 8th segment is placed below
+the bottom one to optionally underline a digit, like this :
+
+     0000
+    5    1
+    5    1
+     6666
+    4    2
+    4    2
+     3333
+
+     7777
+
+The segments are joined by their extremities, which are common to adjacent
+segments. Thus the total digit (without underline) size is 12 pixels wide
+by 21 pixels high, or 25 pixels high when counting the underline, as indicated
+below, where each pixel is represented by one or more numbers corresponding to
+the segments which may light the pixel :
+
+     \X  0   1   2   3   4   5   6   7   8   9  10  11
+    Y +------------------------------------------------
+      |
+    0 |          0   0   0   0   0   0   0   0
+      |
+    1 |     0/5  0   0   0   0   0   0   0   0  0/1
+      |
+    2 |  5   5  0/5  0   0   0   0   0   0  0/1  1   1
+      |
+    3 |  5   5   5                           1   1   1
+      |
+    4 |  5   5   5                           1   1   1
+      |
+    5 |  5   5   5                           1   1   1
+      |
+    6 |  5   5   5                           1   1   1
+      |
+    7 |  5   5   5                           1   1   1
+      |
+    8 |  5   5   5                           1   1   1
+      |
+    9 |  5   5  5/6  6   6   6   6   6   6  6/1  1   1
+      |
+    10|    4/5/6 6   6   6   6   6   6   6   6 6/1/2
+      |
+    11|  4   4  4/6  6   6   6   6   6   6  6/2  2   2
+      |
+    12|  4   4   4                           2   2   2
+      |
+    13|  4   4   4                           2   2   2
+      |
+    14|  4   4   4                           2   2   2
+      |
+    15|  4   4   4                           2   2   2
+      |
+    16|  4   4   4                           2   2   2
+      |
+    17|  4   4   4                           2   2   2
+      |
+    18|  4   4  4/3  3   3   3   3   3   3  3/2  2   2
+      |
+    19|     4/3  3   3   3   3   3   3   3   3  3/2
+      |
+    20|          3   3   3   3   3   3   3   3
+      |
+    21|
+      |
+    22|          7   7   7   7   7   7   7   7
+      |
+    23|      7   7   7   7   7   7   7   7   7   7
+      |
+    24|          7   7   7   7   7   7   7   7
+
+The underline is placed on lines 22 to 24.
+
+Having only 7 segments on/off makes it trivial to declare a font, since each
+character (digit) only requires 7 bits, so the font really only requires 7
+bytes of data and a little bit of code.
+
+Please look at digits-photo.jpg for a photo of what it looks like.
