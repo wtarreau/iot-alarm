@@ -144,17 +144,17 @@ end
 local function screen0_unload()
   local G=getfenv()
   G.screen_show=nil
-  G.screen_btn1_cb=nil
-  G.screen_btn2_cb=nil
   G.screen_unload=nil
+  btn_cb[1]=nil
+  btn_cb[2]=nil
 end
 
 local function screen0_set()
   local G=getfenv()
   G.screen_show=screen0_show
-  G.screen_btn1_cb=screen0_btn1_cb
-  G.screen_btn2_cb=screen0_btn2_cb
   G.screen_unload=screen0_unload
+  btn_cb[1]=screen0_btn1_cb
+  btn_cb[2]=screen0_btn2_cb
 end
 
 local G=getfenv()
@@ -191,17 +191,17 @@ end
 local function screen1_unload()
   local G=getfenv()
   G.screen_show=nil
-  G.screen_btn1_cb=nil
-  G.screen_btn2_cb=nil
   G.screen_unload=nil
+  btn_cb[1]=nil
+  btn_cb[2]=nil
 end
 
 local function screen1_set()
   local G=getfenv()
   G.screen_show=screen1_show
-  G.screen_btn1_cb=screen1_btn1_cb
-  G.screen_btn2_cb=screen1_btn2_cb
   G.screen_unload=screen1_unload
+  btn_cb[1]=screen1_btn1_cb
+  btn_cb[2]=screen1_btn2_cb
 end
 
 local G=getfenv()
@@ -247,17 +247,17 @@ end
 local function screen2_unload()
   local G=getfenv()
   G.screen_show=nil
-  G.screen_btn1_cb=nil
-  G.screen_btn2_cb=nil
   G.screen_unload=nil
+  btn_cb[1]=nil
+  btn_cb[2]=nil
 end
 
 local function screen2_set()
   local G=getfenv()
   G.screen_show=screen2_show
-  G.screen_btn1_cb=screen2_btn1_cb
-  G.screen_btn2_cb=screen2_btn2_cb
   G.screen_unload=screen2_unload
+  btn_cb[1]=screen2_btn1_cb
+  btn_cb[2]=screen2_btn2_cb
 end
 
 local G=getfenv()
@@ -282,11 +282,7 @@ local function refresh()
   if curr_screen ~= want_screen then
     if screen_unload ~= nil then screen_unload() end
     curr_screen=want_screen
-    btn_cb[1]=nil
-    btn_cb[2]=nil
     if screen_set[curr_screen] then screen_set[curr_screen]() end
-    btn_cb[1]=screen_btn1_cb
-    btn_cb[2]=screen_btn2_cb
     force_refresh=1
   end
 
@@ -323,15 +319,10 @@ end
 
 
 
-
-
 -- main entry point
 
 pwm.setup(brd_pwm,500,0)
 pwm.start(brd_pwm)
-
-btn_cb[1]=screen_btn1_cb
-btn_cb[2]=screen_btn2_cb
 
 if brd_btn1 and debounce then
   gpio.trig(brd_btn1,"both",function()
