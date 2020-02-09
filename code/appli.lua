@@ -18,9 +18,11 @@ local light_state=LS_IDLE
 -- current time
 tyy,tmm,tdd,th,tm,ts,twd=0,0,0,0,0,0,0
 
--- basic alarm time, number of minutes of the day, -1=off
+-- basic alarm time, number of minutes of the day, <0=off
+-- the hour is set to -10..-1 to disable it while keeping all
+-- other digits intact.
 -- keep it public to ease changes over telnet
-alarm=-1
+alarm=-600
 
 -- last change date
 local light_change=0
@@ -110,14 +112,14 @@ local function light_pwm(val)
   pwm.setduty(brd_pwm, val)
 end
 
--- returns alarm hour, or -1 if off
+-- returns alarm hour, or <0 if off
 local function alarm_h()
-  return alarm >= 0 and math.floor(alarm/60) or -1
+  return math.floor(alarm/60)
 end
 
--- returns alarm minute, or -1 if off
+-- returns alarm minute
 local function alarm_m()
-  return alarm >= 0 and alarm%60 or -1
+  return alarm % 60
 end
 
 
@@ -211,7 +213,12 @@ end
 local digit=1
 
 local function screen2_show()
-  disp_7seg_str(0,0,string.format("%02d:%02d",alarm_h(),alarm_m()),digit)
+  local h=alarm_h()
+  if h < 0 then
+    disp_7seg_str(0,0,string.format("-%1d:%02d",(10-h)%10,alarm_m()),digit)
+  else
+    disp_7seg_str(0,0,string.format("%02d:%02d",h,alarm_m()),digit)
+  end
 end
 
 local function screen2_btn1_cb(btn,ev)
@@ -219,16 +226,31 @@ local function screen2_btn1_cb(btn,ev)
   if ev == 0 then return end
   if ev == 4 then screen2_show() return end
 
-  if ah < 0 or am < 0 then ah=0 am=0
-  elseif digit == 1 then   ah=ah+10
-  elseif digit == 2 then   ah=ah+1
+  if digit == 1 then
+    if ah == -10 then
+       ah=0
+    elseif ah < 0 then
+       ah=-ah
+    else
+       ah=ah+10
+    end
+    if ah == 30 then ah=-10
+    elseif ah > 23 then ah=-(ah%10)
+    end
+  elseif digit == 2 then
+    if ah < 0 then
+      ah=ah-1
+      if (ah < -10) then ah=ah+10 end
+    else
+      ah=ah+1
+      if ah == 24 then ah=0 end
+    end
   elseif digit == 4 then   am=am+10
   elseif digit == 5 then   am=am+1
   end
 
-  if ah > 23 then ah=-1 end
-  if am > 59 then am=0 end
-  alarm=(ah >= 0) and ah*60+am or -1
+  if am > 59 then am=am-60 end
+  alarm=ah*60+am
 
   if ev == 1 then screen2_show() end
 end
