@@ -3,11 +3,11 @@
 curr_screen=1  -- set to nil to force an immediate refresh on want_screen
 want_screen=0
 
-function load_files(...)
+local function load_files(...)
   local arg={...}
   local f
   for f=1,#arg do
-    if file.exists(arg[f] .. ".lc") then dofile(arg[f] .. ".lc")
+    if file.exists(arg[f] .. ".lc") or (LFS and type(LFS[f]) == "function") then dofile(arg[f] .. ".lc")
     elseif file.exists(arg[f] .. ".lua") then dofile(arg[f] .. ".lua")
     else print("Missing file " .. arg[f])
     end
@@ -30,7 +30,7 @@ function alarm_m()
 end
 
 -- manages screen and brightness
-function refresh()
+local function refresh()
   local ratio=light_new_brightness()
   local yy,mm,dd,h,m,s,wd=time_get_now()
   local force_refresh
@@ -64,7 +64,7 @@ function refresh()
 end
 
 -- periodic callback
-function tick()
+local function tick()
   if light_state == LS_IDLE and th == alarm_h() and tm == alarm_m() then
     light_set_state(LS_FULL_START)
   end
@@ -73,6 +73,7 @@ end
 
 -- entry point
 
-tmr.alarm(1,100,tmr.ALARM_AUTO,tick)
+local tmr_refresh = tmr.create()
+tmr_refresh:alarm(100,tmr.ALARM_AUTO,tick)
 btn_cb[1]=screen_btn1_cb
 btn_cb[2]=screen_btn2_cb
