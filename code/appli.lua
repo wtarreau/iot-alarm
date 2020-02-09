@@ -157,9 +157,8 @@ local function screen0_set()
   btn_cb[2]=screen0_btn2_cb
 end
 
-local G=getfenv()
-if G.screen_set then
-  G.screen_set[0]=screen0_set
+if screen_set then
+  screen_set[0]=screen0_set
 end
 
 
@@ -204,9 +203,8 @@ local function screen1_set()
   btn_cb[2]=screen1_btn2_cb
 end
 
-local G=getfenv()
-if G.screen_set then
-  G.screen_set[1]=screen1_set
+if screen_set then
+  screen_set[1]=screen1_set
 end
 
 
@@ -260,9 +258,8 @@ local function screen2_set()
   btn_cb[2]=screen2_btn2_cb
 end
 
-local G=getfenv()
-if G.screen_set then
-  G.screen_set[2]=screen2_set
+if screen_set then
+  screen_set[2]=screen2_set
 end
 
 
