@@ -9,7 +9,9 @@ brd_btn2=PIN_GP13  gpio.mode(brd_btn2, gpio.INPUT, gpio.PULLUP)
 
 -- OLED display
 brd_oled_addr=0x3c
-brd_oled_d="ssd1306_i2c_128x64_noname"
+--brd_oled_d="ssd1305_i2c_128x32_noname"
+--brd_oled_d="ssd1306_i2c_128x64_noname"
+brd_oled_d="ssd1306_i2c_128x32_univision"
 brd_oled_w=128
 brd_oled_h=32
 brd_oled_r=0
