@@ -252,7 +252,7 @@ local function screen2_btn1_cb(btn,ev)
   if am > 59 then am=am-60 end
   alarm=ah*60+am
 
-  if ev == 1 then screen2_show() end
+  if ev == 1 or ev == 3 then screen2_show() end
 end
 
 local function screen2_btn2_cb(btn,ev)
