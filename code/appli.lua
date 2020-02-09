@@ -44,6 +44,8 @@ local btn_cb={}
 
 -- functions to set the various screens
 local screen_set={}
+local screen_show=nil
+local screen_unload=nil
 
 -- low level button handlers
 local function btn_trig(btn,lev)
@@ -142,17 +144,15 @@ local function screen0_btn2_cb(btn,ev)
 end
 
 local function screen0_unload()
-  local G=getfenv()
-  G.screen_show=nil
-  G.screen_unload=nil
+  screen_show=nil
+  screen_unload=nil
   btn_cb[1]=nil
   btn_cb[2]=nil
 end
 
 local function screen0_set()
-  local G=getfenv()
-  G.screen_show=screen0_show
-  G.screen_unload=screen0_unload
+  screen_show=screen0_show
+  screen_unload=screen0_unload
   btn_cb[1]=screen0_btn1_cb
   btn_cb[2]=screen0_btn2_cb
 end
@@ -188,17 +188,15 @@ local function screen1_btn2_cb(btn,ev)
 end
 
 local function screen1_unload()
-  local G=getfenv()
-  G.screen_show=nil
-  G.screen_unload=nil
+  screen_show=nil
+  screen_unload=nil
   btn_cb[1]=nil
   btn_cb[2]=nil
 end
 
 local function screen1_set()
-  local G=getfenv()
-  G.screen_show=screen1_show
-  G.screen_unload=screen1_unload
+  screen_show=screen1_show
+  screen_unload=screen1_unload
   btn_cb[1]=screen1_btn1_cb
   btn_cb[2]=screen1_btn2_cb
 end
@@ -243,17 +241,15 @@ local function screen2_btn2_cb(btn,ev)
 end
 
 local function screen2_unload()
-  local G=getfenv()
-  G.screen_show=nil
-  G.screen_unload=nil
+  screen_show=nil
+  screen_unload=nil
   btn_cb[1]=nil
   btn_cb[2]=nil
 end
 
 local function screen2_set()
-  local G=getfenv()
-  G.screen_show=screen2_show
-  G.screen_unload=screen2_unload
+  screen_show=screen2_show
+  screen_unload=screen2_unload
   btn_cb[1]=screen2_btn1_cb
   btn_cb[2]=screen2_btn2_cb
 end
