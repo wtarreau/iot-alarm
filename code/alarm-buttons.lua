@@ -5,12 +5,14 @@
 -- timer and automatically repeats every 200ms with the "repeat" event.
 -- btn_cnt is 0 on release and starts at 1 when pressed, and caps to 5 (1 sec).
 -- It's enough to detect a press. It uses timer #2.
-btn_state={1,1}
-btn_cnt={0,0}
+local btn_state={1,1}
+local btn_cnt={0,0}
+
+-- this are the callbacks to set from outside
 btn_cb={}
 
 -- low level button handlers
-function btn_trig(btn,lev)
+local function btn_trig(btn,lev)
   local ev
   if btn_state[btn] ~= lev then
     btn_state[btn] = lev
@@ -27,19 +29,20 @@ function btn_trig(btn,lev)
   end
 end
 
-if brd_btn1 ~= nil then
+if brd_btn1 and debounce then
   gpio.trig(brd_btn1,"both",function()
     btn_trig(1,debounce(brd_btn1))
   end)
 end
 
-if brd_btn2 ~= nil then
+if brd_btn2 and debounce then
   gpio.trig(brd_btn2,"both",function()
     btn_trig(2,debounce(brd_btn2))
   end)
 end
 
-tmr.alarm(2,200,tmr.ALARM_AUTO,function()
+local btn_tmr = tmr.create()
+btn_tmr:alarm(200,tmr.ALARM_AUTO,function()
   local btn
   for btn=1,2 do
     if btn_cnt[btn] == 5 then
