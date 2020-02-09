@@ -337,7 +337,7 @@ end
 
 -- main entry point
 
-pwm.setup(brd_pwm,500,0)
+pwm.setup(brd_pwm,200,0)
 pwm.start(brd_pwm)
 
 if brd_btn1 and debounce then
