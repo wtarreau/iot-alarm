@@ -2,23 +2,24 @@
 -- only works with a stripped down firmware (integer, 12 modules)
 
 -- transition delays in milliseconds
-LIGHT_FULL_TIME=30000
-LIGHT_STAY_TIME=1800000
-LIGHT_STOP_TIME=30000
+local LIGHT_FULL_TIME=30000
+local LIGHT_STAY_TIME=1800000
+local LIGHT_STOP_TIME=30000
 
 -- light states
-LS_IDLE=0
-LS_FULL_START=1
-LS_FULL=2
-LS_FULL_STOP=3
+local LS_IDLE=0
+local LS_FULL_START=1
+local LS_FULL=2
+local LS_FULL_STOP=3
 
--- current light state (public)
-light_state=LS_IDLE
+-- current light state
+local light_state=LS_IDLE
 
 -- current time
 tyy,tmm,tdd,th,tm,ts,twd=0,0,0,0,0,0,0
 
 -- basic alarm time, number of minutes of the day, -1=off
+-- keep it public to ease changes over telnet
 alarm=-1
 
 -- last change date
