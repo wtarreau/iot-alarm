@@ -3,9 +3,6 @@ LS_IDLE=0
 LS_FULL_START=1
 LS_FULL=2
 LS_FULL_STOP=3
-LS_HALF_START=4
-LS_HALF=5
-LS_HALF_STOP=6
 
 -- light state, last change date, last brightness
 light_state=LS_IDLE
@@ -35,28 +32,13 @@ function light_new_brightness()
     light_set_state(LS_FULL)
   end
 
-  if light_state == LS_HALF_START then
-    if dur < LIGHT_HALF_TIME then return math.floor(light_duration() * 512 / LIGHT_HALF_TIME) end
-    light_set_state(LS_HALF)
-  end
-
   if light_state == LS_FULL then
      if dur < LIGHT_STAY_TIME then return 1023 end
      light_set_state(LS_FULL_STOP)
   end
 
-  if light_state == LS_HALF then
-     if dur < LIGHT_STAY_TIME then return 512 end
-     light_set_state(LS_HALF_STOP)
-  end
-
   if light_state == LS_FULL_STOP then
     if dur < LIGHT_FULL_TIME then return 1023 - math.floor(light_duration() * 1023 / LIGHT_FULL_TIME) end
-     light_set_state(LS_IDLE)
-  end
-
-  if light_state == LS_HALF_STOP then
-    if dur < LIGHT_HALF_TIME then return 512 - math.floor(light_duration() * 512 / LIGHT_HALF_TIME) end
      light_set_state(LS_IDLE)
   end
 
