@@ -88,7 +88,7 @@ local function light_new_brightness()
   local dur=light_duration()
 
   if light_state == LS_FULL_START then
-    if dur < LIGHT_FULL_TIME then return math.floor(light_duration() * 1023 / LIGHT_FULL_TIME) end
+    if dur < LIGHT_FULL_TIME then return math.floor(dur * 1023 / LIGHT_FULL_TIME) end
     light_set_state(LS_FULL)
   end
 
@@ -98,7 +98,7 @@ local function light_new_brightness()
   end
 
   if light_state == LS_FULL_STOP then
-    if dur < LIGHT_FULL_TIME then return 1023 - math.floor(light_duration() * 1023 / LIGHT_FULL_TIME) end
+    if dur < LIGHT_FULL_TIME then return 1023 - math.floor(dur * 1023 / LIGHT_FULL_TIME) end
      light_set_state(LS_IDLE)
   end
 
