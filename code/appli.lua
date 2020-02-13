@@ -13,7 +13,8 @@ local LS_FULL=2
 local LS_FULL_STOP=3
 
 -- current light state
-local light_state=LS_IDLE
+--local
+ light_state=LS_IDLE
 
 -- current time
 tyy,tmm,tdd,th,tm,ts,twd=0,0,0,0,0,0,0
@@ -25,8 +26,10 @@ tyy,tmm,tdd,th,tm,ts,twd=0,0,0,0,0,0,0
 alarm=-600
 
 -- last change date
-local light_change=0
-local light_bright=0
+--local
+ light_change=0
+--local
+ light_bright=0
 
 -- screens
 local curr_screen=nil -- set to nil to force an immediate refresh on want_screen
