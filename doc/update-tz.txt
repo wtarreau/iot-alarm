@@ -14,3 +14,23 @@ show(file.list())
 =file.remove("sysconf.lc")
 =file.rename("sysconf-cet.lc","sysconf.lc")
 show(file.list())
+
+
+Or with a single file:
+
+= file.open("sysconf.lua","w+") and file.write([[
+time_offset=3600 --CEST
+--time_offset=7200 --CET
+]]) and file.close()
+show(file.list())
+
+Or by renaming existing files:
+
+-- CEST to CET ---
+file.rename("sysconf.lua","sysconf-cest.lua")
+file.rename("sysconf-cet.lua","sysconf.lua")
+
+-- CET to CEST ---
+file.rename("sysconf.lua","sysconf-cet.lua")
+file.rename("sysconf-cest.lua","sysconf.lua")
+
