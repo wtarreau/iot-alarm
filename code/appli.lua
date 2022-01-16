@@ -260,7 +260,7 @@ end
 
 local function screen2_btn2_cb(btn,ev)
   if ev == 0 then
-    digit=(digit >= 5) and 1 or (digit==2) and 4 or (digit+1)
+    digit=(digit <= 1) and 5 or (digit==4) and 2 or (digit-1)
     screen2_show()
   end
   if ev == 2 then want_screen=0 end
