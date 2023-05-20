@@ -8,9 +8,10 @@ local LIGHT_STOP_TIME=30000
 
 -- light states
 local LS_IDLE=0
-local LS_FULL_START=1
-local LS_FULL=2
-local LS_FULL_STOP=3
+local LS_FAINT=1
+local LS_FULL_START=2
+local LS_FULL=3
+local LS_FULL_STOP=4
 
 -- current light state
 --local
@@ -105,6 +106,11 @@ local function light_new_brightness()
      light_set_state(LS_IDLE)
   end
 
+  if light_state == LS_FAINT then
+    -- for a single press, deliver ~15%
+    return 160
+  end
+
   return 0
 end
 
@@ -134,12 +140,26 @@ end
 local function screen0_btn1_cb(btn,ev)
   if ev == 0 then return end
 
-  if light_state == LS_IDLE then
-    light_set_state(LS_FULL_START)
-  elseif light_state < LS_FULL_STOP then
-    light_set_state(light_state+1)
-  else
-    light_set_state(LS_IDLE)
+  if ev == 1 or ev == 3 then
+    -- short press: off/on or next state
+    if light_state == LS_IDLE then
+      light_set_state(LS_FAINT)
+    elseif light_state == LS_FAINT then
+      light_set_state(LS_IDLE)
+    elseif light_state < LS_FULL_STOP then
+      light_set_state(light_state+1)
+    else
+      light_set_state(LS_IDLE)
+    end
+  elseif ev == 2 then
+    -- long press: start slow or next state
+    if light_state < LS_FULL_START then
+      light_set_state(LS_FULL_START)
+    elseif light_state < LS_FULL_STOP then
+      light_set_state(light_state+1)
+    else
+      light_set_state(LS_IDLE)
+    end
   end
   if ev == 1 or ev == 4 then curr_screen=nil end
 end
@@ -178,12 +198,26 @@ end
 local function screen1_btn1_cb(btn,ev)
   if ev == 0 then return end
 
-  if light_state == LS_IDLE then
-    light_set_state(LS_FULL_START)
-  elseif light_state < LS_FULL_STOP then
-    light_set_state(light_state+1)
-  else
-    light_set_state(LS_IDLE)
+  if ev == 1 or ev == 3 then
+    -- short press: off/on or next state
+    if light_state == LS_IDLE then
+      light_set_state(LS_FAINT)
+    elseif light_state == LS_FAINT then
+      light_set_state(LS_IDLE)
+    elseif light_state < LS_FULL_STOP then
+      light_set_state(light_state+1)
+    else
+      light_set_state(LS_IDLE)
+    end
+  elseif ev == 2 then
+    -- long press: start slow or next state
+    if light_state < LS_FULL_START then
+      light_set_state(LS_FULL_START)
+    elseif light_state < LS_FULL_STOP then
+      light_set_state(light_state+1)
+    else
+      light_set_state(LS_IDLE)
+    end
   end
   if ev == 1 or ev == 4 then screen1_show() end
 end
