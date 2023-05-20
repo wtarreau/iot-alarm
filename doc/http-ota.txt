@@ -1,0 +1,23 @@
+# better enter the lfs directory to have shorter file names (~100 bytes total
+# to be saved):
+
+  $ cd lfs
+  $ ../tools/luac.cross -f -o ../lfs.img  *.lua
+  $ cd ..
+
+# then serve the current dir over HTTP
+
+  $ thttpd -p 8080 -d .
+
+# Then from the ESP, on the same LAN as the server (192.168.11.11 here):
+
+  > dofile("http_fetch.lc")("192.168.11.11:8080","/","lfs.img",print)
+
+# think about pressing enter, because the debugging output makes the prompt
+# disappear. Normally the update takes approx 1-2s, so the prompt should
+# quickly respond to Enter.
+
+# then reboot (doesn't always work, don't know why) :
+
+  > node.restart()
+
