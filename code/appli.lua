@@ -180,7 +180,7 @@ local function screen1_btn1_cb(btn,ev)
 
   if light_state == LS_IDLE then
     light_set_state(LS_FULL_START)
-  elseif light_state < 6 then
+  elseif light_state < LS_FULL_STOP then
     light_set_state(light_state+1)
   else
     light_set_state(LS_IDLE)
