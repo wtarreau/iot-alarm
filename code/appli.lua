@@ -207,7 +207,15 @@ end
 local function screen2_btn2_cb(btn,ev)
   -- short not used for now
   --if ev == 0 then want_screen=0 end
-  if ev == 2 then want_screen=0 end
+
+  -- long press = save config
+  if ev == 2 then
+    want_screen=0
+    if file.open("timezone.lua","w+") then
+      file.write(string.format("time_offset=%d\n",time_offset))
+      file.close()
+    end
+  end
 end
 
 local function screen2_unload()
