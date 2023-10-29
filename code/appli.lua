@@ -107,8 +107,8 @@ local function light_new_brightness()
   end
 
   if light_state == LS_FAINT then
-    -- for a single press, deliver ~15%
-    return 160
+    -- for a single press, deliver ~15% by default
+    return sys_pwm_onoff or 160
   end
 
   return 0
