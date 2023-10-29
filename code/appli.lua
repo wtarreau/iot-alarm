@@ -165,6 +165,7 @@ local function screen0_btn1_cb(btn,ev)
 end
 
 local function screen0_btn2_cb(btn,ev)
+  -- short=set alarm; long=config
   if ev == 0 then want_screen=1 end
   if ev == 2 then want_screen=2 end
 end
@@ -188,49 +189,50 @@ if screen_set then
 end
 
 
--- screen1 time offset in hours
-local function screen1_show()
+-- screen2 time offset in hours
+local function screen2_show()
   local h=(time_offset or 0) / 3600
   disp_7seg_str(0,0,string.format("%02d",h),0)
 end
 
-local function screen1_btn1_cb(btn,ev)
+local function screen2_btn1_cb(btn,ev)
   local tz = (time_offset or 0) / 3600
   if ev == 0 then return end
   tz=tz+1
   if tz > 14 then tz=-12 end
   time_offset=tz*3600
-  if ev == 1 or ev == 4 then screen1_show() end
+  if ev == 1 or ev == 4 then screen2_show() end
 end
 
-local function screen1_btn2_cb(btn,ev)
-  if ev == 0 then want_screen=0 end
-  if ev == 2 then want_screen=2 end
+local function screen2_btn2_cb(btn,ev)
+  -- short not used for now
+  --if ev == 0 then want_screen=0 end
+  if ev == 2 then want_screen=0 end
 end
 
-local function screen1_unload()
+local function screen2_unload()
   screen_show=nil
   screen_unload=nil
   btn_cb[1]=nil
   btn_cb[2]=nil
 end
 
-local function screen1_set()
-  screen_show=screen1_show
-  screen_unload=screen1_unload
-  btn_cb[1]=screen1_btn1_cb
-  btn_cb[2]=screen1_btn2_cb
+local function screen2_set()
+  screen_show=screen2_show
+  screen_unload=screen2_unload
+  btn_cb[1]=screen2_btn1_cb
+  btn_cb[2]=screen2_btn2_cb
 end
 
 if screen_set then
-  screen_set[1]=screen1_set
+  screen_set[2]=screen2_set
 end
 
 
--- screen2 displays the alarm time
+-- screen1 displays the alarm time
 local digit=1
 
-local function screen2_show()
+local function screen1_show()
   local h=alarm_h()
   if h < 0 then
     disp_7seg_str(0,0,string.format("-%1d:%02d",(10-h)%10,alarm_m()),digit)
@@ -239,10 +241,10 @@ local function screen2_show()
   end
 end
 
-local function screen2_btn1_cb(btn,ev)
+local function screen1_btn1_cb(btn,ev)
   local ah,am=alarm_h(),alarm_m()
   if ev == 0 then return end
-  if ev == 4 then screen2_show() return end
+  if ev == 4 then screen1_show() return end
 
   if digit == 1 then
     if ah == -10 then
@@ -270,33 +272,33 @@ local function screen2_btn1_cb(btn,ev)
   if am > 59 then am=am-60 end
   alarm=ah*60+am
 
-  if ev == 1 or ev == 3 then screen2_show() end
+  if ev == 1 or ev == 3 then screen1_show() end
 end
 
-local function screen2_btn2_cb(btn,ev)
+local function screen1_btn2_cb(btn,ev)
   if ev == 0 then
     digit=(digit <= 1) and 5 or (digit==4) and 2 or (digit-1)
-    screen2_show()
+    screen1_show()
   end
   if ev == 2 then want_screen=0 end
 end
 
-local function screen2_unload()
+local function screen1_unload()
   screen_show=nil
   screen_unload=nil
   btn_cb[1]=nil
   btn_cb[2]=nil
 end
 
-local function screen2_set()
-  screen_show=screen2_show
-  screen_unload=screen2_unload
-  btn_cb[1]=screen2_btn1_cb
-  btn_cb[2]=screen2_btn2_cb
+local function screen1_set()
+  screen_show=screen1_show
+  screen_unload=screen1_unload
+  btn_cb[1]=screen1_btn1_cb
+  btn_cb[2]=screen1_btn2_cb
 end
 
 if screen_set then
-  screen_set[2]=screen2_set
+  screen_set[1]=screen1_set
 end
 
 
