@@ -188,37 +188,18 @@ if screen_set then
 end
 
 
--- screen1 displays current date, time, alarm and state. Uses the t* time variables
+-- screen1 time offset in hours
 local function screen1_show()
-  disp_lines(string.format("%04d-%02d-%02d (%d)",tyy,tmm,tdd,twd),
-             string.format("%02d:%02d:%02d   [al %02d:%02d]",th,tm,ts,alarm_h(),alarm_m()),
-             string.format("state=%d ratio=%d",light_state, light_bright))
+  local h=(time_offset or 0) / 3600
+  disp_7seg_str(0,0,string.format("%02d",h),0)
 end
 
 local function screen1_btn1_cb(btn,ev)
+  local tz = (time_offset or 0) / 3600
   if ev == 0 then return end
-
-  if ev == 1 or ev == 3 then
-    -- short press: off/on or next state
-    if light_state == LS_IDLE then
-      light_set_state(LS_FAINT)
-    elseif light_state == LS_FAINT then
-      light_set_state(LS_IDLE)
-    elseif light_state < LS_FULL_STOP then
-      light_set_state(light_state+1)
-    else
-      light_set_state(LS_IDLE)
-    end
-  elseif ev == 2 then
-    -- long press: start slow or next state
-    if light_state < LS_FULL_START then
-      light_set_state(LS_FULL_START)
-    elseif light_state < LS_FULL_STOP then
-      light_set_state(light_state+1)
-    else
-      light_set_state(LS_IDLE)
-    end
-  end
+  tz=tz+1
+  if tz > 14 then tz=-12 end
+  time_offset=tz*3600
   if ev == 1 or ev == 4 then screen1_show() end
 end
 
